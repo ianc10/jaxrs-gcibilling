@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
 import com.jaunt.JNode;
 import com.jaunt.JauntException;
 import com.jaunt.UserAgent;
@@ -119,15 +120,21 @@ public class DataBroker {
 	public String getContractsAndInvoicesInJSON() {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+		//This will cause the node to be a subnode of the root node Contracts (and Invoices, later):
+		//objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE,  true);
 		StringBuffer output = new StringBuffer();
 		try {
 			for (Contract contract : contracts) {
+				//String rootName = Contract.class.getAnnotation(JsonRootName.class).value();
 				if (contract instanceof LineItemContract)
 					output.append(objectMapper.writeValueAsString((LineItemContract)contract));
+					//output.append(objectMapper.writer().withRootName(rootName).writeValueAsString((LineItemContract)contract));
 				else if (contract instanceof ServiceAgreementContract)
 					output.append(objectMapper.writeValueAsString((ServiceAgreementContract)contract));
+					//output.append(objectMapper.writer().withRootName(rootName).writeValueAsString((ServiceAgreementContract)contract));
 				else if (contract instanceof ServiceOrderContract)
 					output.append(objectMapper.writeValueAsString((ServiceOrderContract)contract));
+					//output.append(objectMapper.writer().withRootName(rootName).writeValueAsString((ServiceOrderContract)contract));
 			}
 			for (Invoice invoice : invoices)
 				output.append(objectMapper.writeValueAsString(invoice));
@@ -156,11 +163,317 @@ public class DataBroker {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response retrieveSomething(@PathParam("searchstring") String searchFor) {
 		
-		String searchThrough = getContractsAndInvoicesInJSON();
-
+		String jsonToSearch = getContractsAndInvoicesInJSON();
+		
+		/*  This is an array of JSON objects:
+		String jsonToSearch = 
+				"[{" + 
+					"\"type\": \"net.mandelmania.LineItemContract\"," + 
+					"\"customerCode\": \"A Customer\"," +
+					"\"contractIDPrefix\": \"HB\"," +
+					"\"contractID\": 134," +
+					"\"startDate\": {" +
+						"\"year\": 2014," +
+						"\"month\": \"JULY\"," +
+						"\"dayOfYear\": 182," +
+						"\"leapYear\": false," +
+						"\"monthValue\": 7," +
+						"\"chronology\": {" +
+							"\"calendarType\": \"iso8601\"," +
+							"\"id\": \"ISO\"" +
+						"}," +
+						"\"dayOfMonth\": 1," +
+						"\"dayOfWeek\": \"TUESDAY\"," +
+						"\"era\": \"CE\"" +
+					"}," +
+					"\"termPeriod\": \"Yearly\"," +
+					"\"numberOfTerms\": 2," +
+					"\"billingPeriod\": \"Monthly\"," +
+					"\"endDate\": {" +
+						"\"year\": 2016," +
+						"\"month\": \"JUNE\"," +
+						"\"dayOfYear\": 182," +
+						"\"leapYear\": true," +
+						"\"monthValue\": 6," +
+						"\"chronology\": {" +
+							"\"calendarType\": \"iso8601\"," +
+							"\"id\": \"ISO\"" +
+						"}," +
+						"\"dayOfMonth\": 30," +
+						"\"dayOfWeek\": \"THURSDAY\"," +
+						"\"era\": \"CE\"" +
+					"}," +
+					"\"isExpiring\": true," +
+					"\"billingPeriodTotal\": 18703.0," +
+					"\"numberOfServices\": 5," +
+					"\"lineItems\": [{" +
+						"\"siteName\": \"Site 1\"," +
+						"\"serviceDescription\": \"100 Mbps MPLS\"," +
+						"\"monthlyPrice\": 7422.0" +
+					"}, {" +
+						"\"siteName\": \"Site 2\"," +
+						"\"serviceDescription\": \"100 Mbps MPLS\"," +
+						"\"monthlyPrice\": 245.0" +
+					"}, {" +
+						"\"siteName\": \"Site 3\"," +
+						"\"serviceDescription\": \"100 Mbps MPLS\"," +
+						"\"monthlyPrice\": 3325.0" +
+					"}, {" +
+						"\"siteName\": \"Site 4\"," +
+						"\"serviceDescription\": \"100 Mbps MPLS\"," +
+						"\"monthlyPrice\": 3618.0" +
+					"}, {" +
+						"\"siteName\": \"Site 5\"," +
+						"\"serviceDescription\": \"100 Mbps MPLS\"," +
+						"\"monthlyPrice\": 4093.0" +
+					"}]" +
+				"}, {" +
+					"\"type\": \"net.mandelmania.ServiceOrderContract\"," +
+					"\"customerCode\": \"A Customer\"," +
+					"\"contractIDPrefix\": \"WT\"," +
+					"\"contractID\": 239," +
+					"\"startDate\": {" +
+						"\"year\": 2015," +
+						"\"month\": \"NOVEMBER\"," +
+						"\"dayOfYear\": 328," +
+						"\"leapYear\": false," +
+						"\"monthValue\": 11," +
+						"\"chronology\": {" +
+							"\"calendarType\": \"iso8601\"," +
+							"\"id\": \"ISO\"" +
+						"}," +
+						"\"dayOfMonth\": 24," +
+						"\"dayOfWeek\": \"TUESDAY\"," +
+						"\"era\": \"CE\"" +
+					"}," +
+					"\"termPeriod\": \"Yearly\"," +
+					"\"numberOfTerms\": 3," +
+					"\"billingPeriod\": \"Monthly\"," +
+					"\"endDate\": {" +
+						"\"year\": 2018," +
+						"\"month\": \"NOVEMBER\"," +
+						"\"dayOfYear\": 327," +
+						"\"leapYear\": false," +
+						"\"monthValue\": 11," +
+						"\"chronology\": {" +
+							"\"calendarType\": \"iso8601\"," +
+							"\"id\": \"ISO\"" +
+						"}," +
+						"\"dayOfMonth\": 23," +
+						"\"dayOfWeek\": \"FRIDAY\"," +
+						"\"era\": \"CE\"" +
+					"}," +
+					"\"isExpiring\": false," +
+					"\"billingPeriodTotal\": 275.0," +
+					"\"services\": [{" +
+						"\"description\": \"Configuration and Testing of Equipment\"," +
+						"\"price\": 3485.0," +
+						"\"isRecurring\": false" +
+					"}, {" +
+						"\"description\": \"Remote Site VPN\"," +
+						"\"price\": 275.0," +
+						"\"isRecurring\": true" +
+					"}]" +
+				"}, {" +
+					"\"type\": \"net.mandelmania.ServiceAgreementContract\"," +
+					"\"customerCode\": \"A Customer\"," +
+					"\"contractIDPrefix\": \"SA\"," +
+					"\"contractID\": 432," +
+					"\"startDate\": {" +
+						"\"year\": 2015," +
+						"\"month\": \"JUNE\"," +
+						"\"dayOfYear\": 169," +
+						"\"leapYear\": false," +
+						"\"monthValue\": 6," +
+						"\"chronology\": {" +
+							"\"calendarType\": \"iso8601\"," +
+							"\"id\": \"ISO\"" +
+						"}," +
+						"\"dayOfMonth\": 18," +
+						"\"dayOfWeek\": \"THURSDAY\"," +
+						"\"era\": \"CE\"" +
+					"}," +
+					"\"termPeriod\": \"Yearly\"," +
+					"\"numberOfTerms\": 1," +
+					"\"billingPeriod\": \"Hourly\"," +
+					"\"pricePerBillingPeriod\": 125.0," +
+					"\"projectSummary\": \"This SOW covers the discovery and documentation of ABC Health Corporation's (ABCHC) wired and wireless local area networks (LANs).\"," +
+					"\"scopeOfWork\": \"Document and evaluate IP Address allocation and usage\nDocument physical layout of all LANs\"," +
+					"\"upToHours\": 160," +
+					"\"endDate\": {" +
+						"\"year\": 2016," +
+						"\"month\": \"JUNE\"," +
+						"\"dayOfYear\": 169," +
+						"\"leapYear\": true," +
+						"\"monthValue\": 6," +
+						"\"chronology\": {" +
+							"\"calendarType\": \"iso8601\"," +
+							"\"id\": \"ISO\"" +
+						"}," +
+						"\"dayOfMonth\": 17," +
+						"\"dayOfWeek\": \"FRIDAY\"," +
+						"\"era\": \"CE\"" +
+					"}," +
+					"\"isExpiring\": true" +
+				"}]";
+				*/
+					
 		/*
-		 * This JSON iterator is probably the best bet--maybe scratch the two methods, below.
+		StringBuffer searchResultsStringBuffer = new StringBuffer();
+		searchResultsStringBuffer.append("[");
+		
+		JsonFactory factory = new JsonFactory();
+		factory.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
+		JsonParser jp= null;
+		try
+		{
+			jp = factory.createParser(jsonToSearch.getBytes());
+		} catch (IOException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ObjectMapper mapper = new ObjectMapper();
+		//TypeFactory typeFactory = mapper.getTypeFactory();
+		//MapType type = mapper.getTypeFactory().constructMapType(Map.class, String.class, String.class);
+		TypeReference<Map<String, String>> typeRef = new TypeReference<Map<String, String>>() {};		
+		Map<String, String> result = null;
+		//Iterator <Map<String, String>> it = new ObjectMapper().reader(typeRef).readValues(jp);
+		
+		Contract[] contracts = null;
+		try
+		{
+			contracts = mapper.readValue(jsonToSearch, Contract[].class);
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*
+		Iterator <Map<String, String>> it = null;
+		try
+		{
+			//result =  /*(Map<String, String>) mapper.readValues(jp, typeRef);
+			//it = mapper.readValues(jp, typeRef);
+			/*
+			it = mapper.reader(typeRef).readValues(jp);
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		while (it.hasNext()) {
+			Map<String, String> map = it.next();
+			searchResultsStringBuffer.append(map);
+		}
+		*/
+		
+		
+		/*
+		for (Map.Entry<String, String> entry : result.entrySet()) {
+		    //String key = entry.getKey();
+		    //Object value = entry.getValue();
+			//if (entry.getKey().toLowerCase().contains(searchFor.toLowerCase()) || 
+			//		((String)entry.getValue()).toLowerCase().contains(searchFor.toLowerCase())) {
+			    if (searchResultsStringBuffer.length() > 1)
+			    	searchResultsStringBuffer.append(",");
+			    searchResultsStringBuffer.append("[Key: " + entry.getKey() + "\tValue: " + entry.getValue() + "]");
+			//}
+		}
+		*/
+			
+		/*
+		ObjectMapper mapper = new ObjectMapper();
+		List<Contract> contracts = null;
+		try
+		{
+			contracts = mapper.readValue(jsonToSearch,  mapper.getTypeFactory().constructCollectionType(List.class, Contract.class));
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		for (Contract contract : contracts) {
+			
+		}
+		*/
+		
+		//String[] jsonObjects = jsonToSearch.split("\\{([^}]*.?)\\}");
+		//String[] jsonObjects = jsonToSearch.split("\\{([^}]*?)\\}");
+		//String[] jsonObjects = jsonToSearch.split("\\{([^\\}]*.?)\\}");
+		
+		/*
+		List<String> matchList = new ArrayList<String>();
+		//Pattern jsonPattern = Pattern.compile("\\{(.*?)\\}");
+		//Pattern jsonPattern = Pattern.compile("\\{([^}]*)\\}");
+		Pattern jsonPattern = Pattern.compile("\\{(.*?)\\}(?!\\s*\\})\\s*", Pattern.DOTALL);
+		Matcher regexMatcher = jsonPattern.matcher(jsonToSearch);
+		while (regexMatcher.find())
+			matchList.add(regexMatcher.group());
+		
+		//Iterate through the list of JSON objects
+		for (String match : matchList) {
+		//for (String match : jsonObjects) {
+
+			searchResultsStringBuffer.append(match);
+			
+			/*
+			//From http://stackoverflow.com/questions/13916086/jackson-recursive-parsing-into-mapstring-object/13926850#13926850
+			//final String json = "{}";
+			final ObjectMapper mapper = new ObjectMapper();
+			final MapType type = mapper.getTypeFactory().constructMapType(
+			    Map.class, String.class, Object.class);
+			Map<String, Object> data = null;
+			try
+			{
+				data = mapper.readValue(match, type);
+			} catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			for (Map.Entry<String, Object> entry : data.entrySet()) {
+			    //String key = entry.getKey();
+			    //Object value = entry.getValue();
+				if (entry.getKey().toLowerCase().contains(searchFor.toLowerCase()) || 
+						((String)entry.getValue()).toLowerCase().contains(searchFor.toLowerCase())) {
+				    if (searchResultsStringBuffer.length() > 1)
+				    	searchResultsStringBuffer.append(",");
+				    searchResultsStringBuffer.append("[Key: " + entry.getKey() + "\tValue: " + entry.getValue() + "]");
+				}
+			}
+			*/
+			/*
+			//searchResultsStringBuffer.append("]");			
+			searchResultsStringBuffer.append("]       **********************");			
+		}
+		*/
+		
+		/*
+		//For reference: http://stackoverflow.com/questions/19760138/parsing-json-in-java-without-knowing-json-format
+		JsonFactory factory = new JsonFactory();
+		ObjectMapper mapper = new ObjectMapper(factory);
+		JsonNode rootNode = null;
+		try
+		{
+			rootNode = mapper.readTree(jsonToSearch);
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}  
+		Iterator<Map.Entry<String,JsonNode>> fieldsIterator = rootNode.fields();
+		while (fieldsIterator.hasNext()) {
+		    Map.Entry<String,JsonNode> field = fieldsIterator.next();
+		    //System.out.println("Key: " + field.getKey() + "\tValue:" + field.getValue());
+		    if (searchResultsStringBuffer.length() > 1)
+		    	searchResultsStringBuffer.append(",");
+		    searchResultsStringBuffer.append("[Key: " + field.getKey() + "\tValue: " + field.getValue() + "]");
+		}
+		searchResultsStringBuffer.append("]");
+	       
+		/*
 		 * From: http://stackoverflow.com/questions/9151619/java-iterate-over-jsonobject
+		 *  
 		jObject = new JSONObject(contents.trim());
 		Iterator<?> keys = jObject.keys();
 		while( keys.hasNext() ) {
@@ -207,15 +520,16 @@ public class DataBroker {
 	    String searchResultsString = searchResultsStringBuffer.toString();
 	    */
 	    
-		/*
-		 * These were attempts to use Jaunt (which provides JNode and UserAgent) to query
-		 * the JSON.  This seems to only work when querying keys, not values too.
-		 */
+		
+		 //* These were attempts to use Jaunt (which provides JNode and UserAgent) to query
+		 //* the JSON.  This seems to only work when querying keys, not values too.
+		 //*
+		
 		JNode searchResults = null;
 		String searchResultsString = null;
 		try {
 			UserAgent userAgent = new UserAgent();
-			userAgent.openJSON(searchThrough);
+			userAgent.openJSON(jsonToSearch);
 			searchResults = userAgent.json.findEvery(searchFor);
 			searchResultsString = searchResults.toString();
 			//This was attempt at querying values.
@@ -227,7 +541,7 @@ public class DataBroker {
 		
 		return Response
 				.status(200)
-				.entity(searchResultsString)
+				.entity(searchResultsString.toString())
 				.build();
 	}	
 	

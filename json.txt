@@ -1,0 +1,317 @@
+{
+  "type" : "net.mandelmania.LineItemContract",
+  "customerCode" : "A Customer",
+  "contractIDPrefix" : "HB",
+  "contractID" : 134,
+  "startDate" : {
+    "year" : 2014,
+    "month" : "JULY",
+    "dayOfYear" : 182,
+    "leapYear" : false,
+    "monthValue" : 7,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 1,
+    "dayOfWeek" : "TUESDAY",
+    "era" : "CE"
+  },
+  "termPeriod" : "Yearly",
+  "numberOfTerms" : 2,
+  "billingPeriod" : "Monthly",
+  "endDate" : {
+    "year" : 2016,
+    "month" : "JUNE",
+    "dayOfYear" : 182,
+    "leapYear" : true,
+    "monthValue" : 6,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 30,
+    "dayOfWeek" : "THURSDAY",
+    "era" : "CE"
+  },
+  "isExpiring" : true,
+  "billingPeriodTotal" : 18703.0,
+  "numberOfServices" : 5,
+  "lineItems" : [ {
+    "siteName" : "Site 1",
+    "serviceDescription" : "100 Mbps MPLS",
+    "monthlyPrice" : 7422.0
+  }, {
+    "siteName" : "Site 2",
+    "serviceDescription" : "100 Mbps MPLS",
+    "monthlyPrice" : 245.0
+  }, {
+    "siteName" : "Site 3",
+    "serviceDescription" : "100 Mbps MPLS",
+    "monthlyPrice" : 3325.0
+  }, {
+    "siteName" : "Site 4",
+    "serviceDescription" : "100 Mbps MPLS",
+    "monthlyPrice" : 3618.0
+  }, {
+    "siteName" : "Site 5",
+    "serviceDescription" : "100 Mbps MPLS",
+    "monthlyPrice" : 4093.0
+  } ]
+}{
+  "type" : "net.mandelmania.ServiceOrderContract",
+  "customerCode" : "A Customer",
+  "contractIDPrefix" : "WT",
+  "contractID" : 239,
+  "startDate" : {
+    "year" : 2015,
+    "month" : "NOVEMBER",
+    "dayOfYear" : 328,
+    "leapYear" : false,
+    "monthValue" : 11,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 24,
+    "dayOfWeek" : "TUESDAY",
+    "era" : "CE"
+  },
+  "termPeriod" : "Yearly",
+  "numberOfTerms" : 3,
+  "billingPeriod" : "Monthly",
+  "endDate" : {
+    "year" : 2018,
+    "month" : "NOVEMBER",
+    "dayOfYear" : 327,
+    "leapYear" : false,
+    "monthValue" : 11,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 23,
+    "dayOfWeek" : "FRIDAY",
+    "era" : "CE"
+  },
+  "isExpiring" : false,
+  "billingPeriodTotal" : 275.0,
+  "services" : [ {
+    "description" : "Configuration and Testing of Equipment",
+    "price" : 3485.0,
+    "isRecurring" : false
+  }, {
+    "description" : "Remote Site VPN",
+    "price" : 275.0,
+    "isRecurring" : true
+  } ]
+}{
+  "type" : "net.mandelmania.ServiceAgreementContract",
+  "customerCode" : "A Customer",
+  "contractIDPrefix" : "SA",
+  "contractID" : 432,
+  "startDate" : {
+    "year" : 2015,
+    "month" : "JUNE",
+    "dayOfYear" : 169,
+    "leapYear" : false,
+    "monthValue" : 6,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 18,
+    "dayOfWeek" : "THURSDAY",
+    "era" : "CE"
+  },
+  "termPeriod" : "Yearly",
+  "numberOfTerms" : 1,
+  "billingPeriod" : "Hourly",
+  "pricePerBillingPeriod" : 125.0,
+  "projectSummary" : "This SOW covers the discovery and documentation of ABC Health Corporation's (ABCHC) wired and wireless local area networks (LANs).",
+  "scopeOfWork" : "Document and evaluate IP Address allocation and usage\nDocument physical layout of all LANs",
+  "upToHours" : 160,
+  "endDate" : {
+    "year" : 2016,
+    "month" : "JUNE",
+    "dayOfYear" : 169,
+    "leapYear" : true,
+    "monthValue" : 6,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 17,
+    "dayOfWeek" : "FRIDAY",
+    "era" : "CE"
+  },
+  "isExpiring" : true
+}{
+  "type" : "net.mandelmania.Invoice",
+  "contractID" : 239,
+  "invoiceID" : 335783,
+  "dueDate" : {
+    "year" : 2016,
+    "month" : "JULY",
+    "dayOfYear" : 213,
+    "leapYear" : true,
+    "monthValue" : 7,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 31,
+    "dayOfWeek" : "SUNDAY",
+    "era" : "CE"
+  },
+  "amount" : 275.0,
+  "isPaid" : false,
+  "isPastDue" : false
+}{
+  "type" : "net.mandelmania.Invoice",
+  "contractID" : 134,
+  "invoiceID" : 312236,
+  "dueDate" : {
+    "year" : 2015,
+    "month" : "DECEMBER",
+    "dayOfYear" : 364,
+    "leapYear" : false,
+    "monthValue" : 12,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 30,
+    "dayOfWeek" : "WEDNESDAY",
+    "era" : "CE"
+  },
+  "amount" : 51155.0,
+  "isPaid" : false,
+  "isPastDue" : true
+}{
+  "type" : "net.mandelmania.Invoice",
+  "contractID" : 239,
+  "invoiceID" : 301389,
+  "dueDate" : {
+    "year" : 2015,
+    "month" : "NOVEMBER",
+    "dayOfYear" : 330,
+    "leapYear" : false,
+    "monthValue" : 11,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 26,
+    "dayOfWeek" : "THURSDAY",
+    "era" : "CE"
+  },
+  "amount" : 275.0,
+  "isPaid" : true,
+  "isPastDue" : false
+}{
+  "type" : "net.mandelmania.Invoice",
+  "contractID" : 134,
+  "invoiceID" : 288193,
+  "dueDate" : {
+    "year" : 2015,
+    "month" : "NOVEMBER",
+    "dayOfYear" : 329,
+    "leapYear" : false,
+    "monthValue" : 11,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 25,
+    "dayOfWeek" : "WEDNESDAY",
+    "era" : "CE"
+  },
+  "amount" : 51155.0,
+  "isPaid" : true,
+  "isPastDue" : false
+}{
+  "type" : "net.mandelmania.Invoice",
+  "contractID" : 134,
+  "invoiceID" : 279192,
+  "dueDate" : {
+    "year" : 2015,
+    "month" : "AUGUST",
+    "dayOfYear" : 239,
+    "leapYear" : false,
+    "monthValue" : 8,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 27,
+    "dayOfWeek" : "THURSDAY",
+    "era" : "CE"
+  },
+  "amount" : 49390.0,
+  "isPaid" : true,
+  "isPastDue" : false
+}{
+  "type" : "net.mandelmania.Invoice",
+  "contractID" : 134,
+  "invoiceID" : 268381,
+  "dueDate" : {
+    "year" : 2015,
+    "month" : "JULY",
+    "dayOfYear" : 209,
+    "leapYear" : false,
+    "monthValue" : 7,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 28,
+    "dayOfWeek" : "TUESDAY",
+    "era" : "CE"
+  },
+  "amount" : 51155.0,
+  "isPaid" : true,
+  "isPastDue" : false
+}{
+  "type" : "net.mandelmania.Invoice",
+  "contractID" : 134,
+  "invoiceID" : 257181,
+  "dueDate" : {
+    "year" : 2015,
+    "month" : "JUNE",
+    "dayOfYear" : 175,
+    "leapYear" : false,
+    "monthValue" : 6,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 24,
+    "dayOfWeek" : "WEDNESDAY",
+    "era" : "CE"
+  },
+  "amount" : 51155.0,
+  "isPaid" : true,
+  "isPastDue" : false
+}{
+  "type" : "net.mandelmania.Invoice",
+  "contractID" : 134,
+  "invoiceID" : 248184,
+  "dueDate" : {
+    "year" : 2015,
+    "month" : "MAY",
+    "dayOfYear" : 141,
+    "leapYear" : false,
+    "monthValue" : 5,
+    "chronology" : {
+      "calendarType" : "iso8601",
+      "id" : "ISO"
+    },
+    "dayOfMonth" : 21,
+    "dayOfWeek" : "THURSDAY",
+    "era" : "CE"
+  },
+  "amount" : 51155.0,
+  "isPaid" : true,
+  "isPastDue" : false
+}
