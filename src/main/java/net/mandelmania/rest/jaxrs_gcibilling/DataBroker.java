@@ -2,8 +2,14 @@ package net.mandelmania.rest.jaxrs_gcibilling;
 
 import net.mandelmania.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.ws.rs.Consumes;
@@ -15,9 +21,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.type.MapType;
 
 import com.jaunt.JNode;
 import com.jaunt.JauntException;
@@ -163,9 +173,146 @@ public class DataBroker {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response retrieveSomething(@PathParam("searchstring") String searchFor) {
 		
+		searchFor = searchFor.toLowerCase();
+		//Search all lower case version of the JSON object, but construct the output strings
+		//from the original mixed-case text.
 		String jsonToSearch = getContractsAndInvoicesInJSON();
+		String jsonToSearchLowerCase = getContractsAndInvoicesInJSON().toLowerCase();
+		String searchResultsString = "";
+
+		/*
+		StringBuffer searchResultsStringBuffer = new StringBuffer();
+		final ObjectMapper mapper = new ObjectMapper();
+		JsonNode rootArray = null; 
+		try
+		{
+			rootArray = mapper.readTree(jsonToSearch);
+		} catch (IOException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		for (JsonNode root: rootArray) {
+			String jsonNodeText = root.toString();
+			
+			/*
+			//final MapType type = mapper.getTypeFactory().constructMapType(
+			//	    Map.class, String.class, Object.class);
+			ObjectMapper innerMapper = new ObjectMapper();
+			Map<String, Object> data = innerMapper.convertValue(root, Map.class);
+			//data = mapper.convertValue(root, type);
+			//data = mapper.convertValue(root, Map.class);
+			for (Map.Entry<String, Object> entry : data.entrySet()) {
+			    //String key = entry.getKey();
+			    //Object value = entry.getValue();
+				//if (entry.getKey().toLowerCase().contains(searchFor.toLowerCase()) || 
+				//		((String)entry.getValue()).toLowerCase().contains(searchFor.toLowerCase())) {
+				    if (searchResultsStringBuffer.length() > 1)
+				    	searchResultsStringBuffer.append(",");
+				    searchResultsStringBuffer.append("[Key: " + entry.getKey() + "\tValue: " + entry.getValue() + "]");
+				//}
+			}
+			
+			
+			
+			searchResultsStringBuffer.append(jsonNodeText + "**************<BR><BR>");
+		}
+		*/
 		
-		/*  This is an array of JSON objects:
+		/*
+		 * This will convert the first JSON object to key/value pairs
+		 */
+		/*
+		final MapType type = mapper.getTypeFactory().constructMapType(
+		    Map.class, String.class, Object.class);
+		Map<String, Object> data = null;
+		try
+		{
+			data = mapper.readValue(jsonToSearch, type);
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for (Map.Entry<String, Object> entry : data.entrySet()) {
+		    //String key = entry.getKey();
+		    //Object value = entry.getValue();
+			//if (entry.getKey().toLowerCase().contains(searchFor.toLowerCase()) || 
+			//		((String)entry.getValue()).toLowerCase().contains(searchFor.toLowerCase())) {
+			    if (searchResultsStringBuffer.length() > 1)
+			    	searchResultsStringBuffer.append(",");
+			    searchResultsStringBuffer.append("[Key: " + entry.getKey() + "\tValue: " + entry.getValue() + "]");
+			//}
+		}
+		*/
+		
+	    //searchResultsString = searchResultsStringBuffer.toString();
+		
+		try {
+			//The following will find key/value pairs that contain text matching the search string
+			//It is not entirely finished, as it doesn't properly handle values that don't have
+			//double quotes surrounding them.
+			int beginIndex = jsonToSearchLowerCase.indexOf(searchFor);
+			while (beginIndex != -1) {
+				String newString = "";
+				int newStartIndex = 0;
+					int traverseIndex = beginIndex;
+					while (jsonToSearchLowerCase.charAt(traverseIndex) != '"')
+						traverseIndex--;
+					int endIndex = beginIndex;
+					beginIndex = traverseIndex;
+					traverseIndex = endIndex;
+					while (jsonToSearchLowerCase.charAt(traverseIndex) != '"')
+						traverseIndex++;
+					endIndex = traverseIndex + 1;
+					newString = jsonToSearch.substring(beginIndex, endIndex);
+					if (jsonToSearch.charAt(endIndex) == ' ') {
+						//string is a key, so get the corresponding value
+						beginIndex = endIndex + 3;
+						traverseIndex = beginIndex + 1;
+						while (jsonToSearchLowerCase.charAt(traverseIndex) != '"')
+							traverseIndex++;
+						endIndex = traverseIndex + 1;
+						newString = newString + " : " + jsonToSearch.substring(beginIndex, endIndex);
+						newStartIndex = endIndex;
+					} else {
+						//that should instead be a comma, so:
+						//string is a value, so get the corresponding key
+						newStartIndex = endIndex;
+						endIndex = beginIndex - 4;
+						traverseIndex = endIndex - 1;
+						while (jsonToSearchLowerCase.charAt(traverseIndex) != '"')
+							traverseIndex--;
+						beginIndex = traverseIndex - 1;
+						newString = jsonToSearch.substring(beginIndex, endIndex) + " : " + newString;
+					}
+				searchResultsString = searchResultsString + newString + "<BR>";
+				beginIndex = jsonToSearchLowerCase.indexOf(searchFor, newStartIndex);
+			}
+		} catch (StringIndexOutOfBoundsException ex) {
+			//Do nothing at this point but break out of the loop
+		}
+		
+		
+		 /* These were attempts to use Jaunt (which provides JNode and UserAgent) to query
+		  * the JSON.  This seems to only work when querying keys, not values too.
+		  *
+		JNode searchResults = null;
+		try {
+			UserAgent userAgent = new UserAgent();
+			userAgent.openJSON(jsonToSearch);
+			searchResults = userAgent.json.findEvery(searchFor);
+			searchResultsString = searchResults.toString();
+			//This was attempt at querying values.
+			//searchResults = userAgent.json.findEvery("?:{?:"+searchFor+"}");
+			//searchResultsString += searchResults.toString();
+		} catch(JauntException e) {
+			System.err.println(e);
+		}
+		*/		
+		
+		///*  This is an array of JSON objects:
+		/*
 		String jsonToSearch = 
 				"[{" + 
 					"\"type\": \"net.mandelmania.LineItemContract\"," + 
@@ -316,11 +463,12 @@ public class DataBroker {
 					"}," +
 					"\"isExpiring\": true" +
 				"}]";
-				*/
-					
+				//*/
+		
+		//StringBuffer searchResultsStringBuffer = new StringBuffer();
 		/*
-		StringBuffer searchResultsStringBuffer = new StringBuffer();
-		searchResultsStringBuffer.append("[");
+		 searchResultsStringBuffer.append("[");
+		 
 		
 		JsonFactory factory = new JsonFactory();
 		factory.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
@@ -353,7 +501,7 @@ public class DataBroker {
 		Iterator <Map<String, String>> it = null;
 		try
 		{
-			//result =  /*(Map<String, String>) mapper.readValues(jp, typeRef);
+			//result =  /*(Map<String, String>) mapper.s(jp, typeRef);
 			//it = mapper.readValues(jp, typeRef);
 			/*
 			it = mapper.reader(typeRef).readValues(jp);
@@ -450,6 +598,35 @@ public class DataBroker {
 		*/
 		
 		/*
+		final ObjectMapper mapper = new ObjectMapper();
+		final MapType type = mapper.getTypeFactory().constructMapType(
+		    Map.class, String.class, Object.class);
+		Map<String, Object> data = null;
+		try
+		{
+			data = mapper.readValue(jsonToSearch, type);
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for (Map.Entry<String, Object> entry : data.entrySet()) {
+		    //String key = entry.getKey();
+		    //Object value = entry.getValue();
+			//if (entry.getKey().toLowerCase().contains(searchFor.toLowerCase()) || 
+			//		((String)entry.getValue()).toLowerCase().contains(searchFor.toLowerCase())) {
+			    if (searchResultsStringBuffer.length() > 1)
+			    	searchResultsStringBuffer.append(",");
+			    searchResultsStringBuffer.append("[Key: " + entry.getKey() + "\tValue: " + entry.getValue() + "]");
+			//}
+		}
+		*/
+		
+		/*
+		//searchResultsStringBuffer.append("]");			
+		searchResultsStringBuffer.append("]       **********************");	
+		
+		/*
 		//For reference: http://stackoverflow.com/questions/19760138/parsing-json-in-java-without-knowing-json-format
 		JsonFactory factory = new JsonFactory();
 		ObjectMapper mapper = new ObjectMapper(factory);
@@ -520,25 +697,6 @@ public class DataBroker {
 	    String searchResultsString = searchResultsStringBuffer.toString();
 	    */
 	    
-		
-		 //* These were attempts to use Jaunt (which provides JNode and UserAgent) to query
-		 //* the JSON.  This seems to only work when querying keys, not values too.
-		 //*
-		
-		JNode searchResults = null;
-		String searchResultsString = null;
-		try {
-			UserAgent userAgent = new UserAgent();
-			userAgent.openJSON(jsonToSearch);
-			searchResults = userAgent.json.findEvery(searchFor);
-			searchResultsString = searchResults.toString();
-			//This was attempt at querying values.
-			//searchResults = userAgent.json.findEvery("?:{?:"+searchFor+"}");
-			//searchResultsString += searchResults.toString();
-		} catch(JauntException e) {
-			System.err.println(e);
-		}
-		
 		return Response
 				.status(200)
 				.entity(searchResultsString.toString())
