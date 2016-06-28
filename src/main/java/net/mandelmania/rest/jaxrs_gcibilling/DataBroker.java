@@ -5,11 +5,7 @@ import net.mandelmania.*;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.ws.rs.Consumes;
@@ -21,17 +17,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.MapType;
 
-import com.jaunt.JNode;
-import com.jaunt.JauntException;
-import com.jaunt.UserAgent;
+//import com.jaunt.JNode;
+//import com.jaunt.JauntException;
+//import com.jaunt.UserAgent;
 
 /**
  * Root resource (exposed at "databroker" path)
@@ -133,8 +127,11 @@ public class DataBroker {
 		//This will cause the node to be a subnode of the root node Contracts (and Invoices, later):
 		//objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE,  true);
 		StringBuffer output = new StringBuffer();
+		output.append("[");
 		try {
 			for (Contract contract : contracts) {
+				if (output.length() > 1)
+					output.append(",");
 				//String rootName = Contract.class.getAnnotation(JsonRootName.class).value();
 				if (contract instanceof LineItemContract)
 					output.append(objectMapper.writeValueAsString((LineItemContract)contract));
@@ -146,8 +143,11 @@ public class DataBroker {
 					output.append(objectMapper.writeValueAsString((ServiceOrderContract)contract));
 					//output.append(objectMapper.writer().withRootName(rootName).writeValueAsString((ServiceOrderContract)contract));
 			}
-			for (Invoice invoice : invoices)
+			for (Invoice invoice : invoices) {
+				output.append(",");
 				output.append(objectMapper.writeValueAsString(invoice));
+			}
+			output.append("]");
 		} catch (JsonProcessingException e)
 		{
 			e.printStackTrace();
@@ -177,10 +177,10 @@ public class DataBroker {
 		//Search all lower case version of the JSON object, but construct the output strings
 		//from the original mixed-case text.
 		String jsonToSearch = getContractsAndInvoicesInJSON();
-		String jsonToSearchLowerCase = getContractsAndInvoicesInJSON().toLowerCase();
+		//String jsonToSearchLowerCase = getContractsAndInvoicesInJSON().toLowerCase();
 		String searchResultsString = "";
 
-		/*
+		//Read the array of JSON objects and cycle through every object -- THIS WORKS, YAY!!!
 		StringBuffer searchResultsStringBuffer = new StringBuffer();
 		final ObjectMapper mapper = new ObjectMapper();
 		JsonNode rootArray = null; 
@@ -194,14 +194,53 @@ public class DataBroker {
 		}
 		for (JsonNode root: rootArray) {
 			String jsonNodeText = root.toString();
-			
-			/*
-			//final MapType type = mapper.getTypeFactory().constructMapType(
-			//	    Map.class, String.class, Object.class);
+			final MapType type = mapper.getTypeFactory().constructMapType(
+				    Map.class, String.class, Object.class);
 			ObjectMapper innerMapper = new ObjectMapper();
-			Map<String, Object> data = innerMapper.convertValue(root, Map.class);
-			//data = mapper.convertValue(root, type);
-			//data = mapper.convertValue(root, Map.class);
+			//Use type instead of Map.class:
+			Map<String, Object> data = innerMapper.convertValue(root, type);
+			for (Map.Entry<String, Object> entry : data.entrySet()) {
+			    //String key = entry.getKey();
+			    //Object value = entry.getValue();
+				//For values, we are dealing with these classes:  String, Integer, Double, Boolean, ArrayList, LinkedHashMap
+				//searchResultsStringBuffer.append("   " + entry.getValue() + " " + entry.getValue().getClass().getName() + "!!!!!");
+				//Just use Object's toString()!  Simplifies things.  Could also use Java 8's new Stream API
+				//to query objects similarly to C# and .NET's LINQ.
+				if (entry.getKey().toString().toLowerCase().contains(searchFor.toLowerCase()) || 
+						entry.getValue().toString().toLowerCase().contains(searchFor.toLowerCase())) {
+				    if (searchResultsStringBuffer.length() > 1)
+				    	searchResultsStringBuffer.append(",");
+				    //We can get the values for the JSON object's corresponding keys with root.path("keyname")
+				    searchResultsStringBuffer.append("[ID: " + root.path("contractIDPrefix") + root.path("contractID") +
+				    		", Matching Key: " + entry.getKey() + ", Value: " + entry.getValue().toString() + "]<BR><BR>");
+				}
+			}
+			//Could have an input parameter specifying whether to return the whole node text, then
+			//if the flag is set, do something like the following:
+			//searchResultsStringBuffer.append(jsonNodeText + "<BR><BR>");
+		}
+		searchResultsString = searchResultsStringBuffer.toString();
+		
+		/*
+		//Read the array of JSON objects and cycle through every object -- THIS WORKS, YAY!!!
+		StringBuffer searchResultsStringBuffer = new StringBuffer();
+		final ObjectMapper mapper = new ObjectMapper();
+		JsonNode rootArray = null; 
+		try
+		{
+			rootArray = mapper.readTree(jsonToSearch);
+		} catch (IOException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		for (JsonNode root: rootArray) {
+			String jsonNodeText = root.toString();
+			final MapType type = mapper.getTypeFactory().constructMapType(
+				    Map.class, String.class, Object.class);
+			ObjectMapper innerMapper = new ObjectMapper();
+			//Use type instead of Map.class:
+			Map<String, Object> data = innerMapper.convertValue(root, type);
 			for (Map.Entry<String, Object> entry : data.entrySet()) {
 			    //String key = entry.getKey();
 			    //Object value = entry.getValue();
@@ -212,11 +251,9 @@ public class DataBroker {
 				    searchResultsStringBuffer.append("[Key: " + entry.getKey() + "\tValue: " + entry.getValue() + "]");
 				//}
 			}
-			
-			
-			
 			searchResultsStringBuffer.append(jsonNodeText + "**************<BR><BR>");
 		}
+		searchResultsString = searchResultsStringBuffer.toString();
 		*/
 		
 		/*
@@ -247,11 +284,12 @@ public class DataBroker {
 		*/
 		
 	    //searchResultsString = searchResultsStringBuffer.toString();
-		
+		/*
 		try {
-			//The following will find key/value pairs that contain text matching the search string
-			//It is not entirely finished, as it doesn't properly handle values that don't have
-			//double quotes surrounding them.
+			//The following text parsing algorithm will find key/value pairs that contain
+			 * text matching the search string.  It is not entirely finished, as it doesn't
+			 * properly handle values that don't have double quotes surrounding them.
+			 * 
 			int beginIndex = jsonToSearchLowerCase.indexOf(searchFor);
 			while (beginIndex != -1) {
 				String newString = "";
@@ -294,7 +332,7 @@ public class DataBroker {
 		}
 		
 		
-		 /* These were attempts to use Jaunt (which provides JNode and UserAgent) to query
+		 /* This was an attempt to use Jaunt (which provides JNode and UserAgent) to query
 		  * the JSON.  This seems to only work when querying keys, not values too.
 		  *
 		JNode searchResults = null;
@@ -311,8 +349,10 @@ public class DataBroker {
 		}
 		*/		
 		
-		///*  This is an array of JSON objects:
-		/*
+		
+		/*  This is a properly formed hard-coded array of JSON objects.
+		 *  JSON can be verified for validity at jsonlint.com. 
+		 * 
 		String jsonToSearch = 
 				"[{" + 
 					"\"type\": \"net.mandelmania.LineItemContract\"," + 
@@ -466,10 +506,10 @@ public class DataBroker {
 				//*/
 		
 		//StringBuffer searchResultsStringBuffer = new StringBuffer();
-		/*
+		/* The following code could be used as a starting point to import JSON
+		 * into POJOs (Plain Old Java Objects). 
+		 *
 		 searchResultsStringBuffer.append("[");
-		 
-		
 		JsonFactory factory = new JsonFactory();
 		factory.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
 		JsonParser jp= null;
@@ -517,20 +557,6 @@ public class DataBroker {
 		}
 		*/
 		
-		
-		/*
-		for (Map.Entry<String, String> entry : result.entrySet()) {
-		    //String key = entry.getKey();
-		    //Object value = entry.getValue();
-			//if (entry.getKey().toLowerCase().contains(searchFor.toLowerCase()) || 
-			//		((String)entry.getValue()).toLowerCase().contains(searchFor.toLowerCase())) {
-			    if (searchResultsStringBuffer.length() > 1)
-			    	searchResultsStringBuffer.append(",");
-			    searchResultsStringBuffer.append("[Key: " + entry.getKey() + "\tValue: " + entry.getValue() + "]");
-			//}
-		}
-		*/
-			
 		/*
 		ObjectMapper mapper = new ObjectMapper();
 		List<Contract> contracts = null;
@@ -545,11 +571,13 @@ public class DataBroker {
 			
 		}
 		*/
-		
+
+		//These are attempts at pulling JSON objects out via Java's Regex Matcher.  This is
+		//not a suitable task for it, though, since the pattern matching for parsing via regular
+		//expressions requires recursion, which the Java regex library doesn't support. 
 		//String[] jsonObjects = jsonToSearch.split("\\{([^}]*.?)\\}");
 		//String[] jsonObjects = jsonToSearch.split("\\{([^}]*?)\\}");
 		//String[] jsonObjects = jsonToSearch.split("\\{([^\\}]*.?)\\}");
-		
 		/*
 		List<String> matchList = new ArrayList<String>();
 		//Pattern jsonPattern = Pattern.compile("\\{(.*?)\\}");
@@ -562,9 +590,7 @@ public class DataBroker {
 		//Iterate through the list of JSON objects
 		for (String match : matchList) {
 		//for (String match : jsonObjects) {
-
 			searchResultsStringBuffer.append(match);
-			
 			/*
 			//From http://stackoverflow.com/questions/13916086/jackson-recursive-parsing-into-mapstring-object/13926850#13926850
 			//final String json = "{}";
@@ -594,31 +620,6 @@ public class DataBroker {
 			/*
 			//searchResultsStringBuffer.append("]");			
 			searchResultsStringBuffer.append("]       **********************");			
-		}
-		*/
-		
-		/*
-		final ObjectMapper mapper = new ObjectMapper();
-		final MapType type = mapper.getTypeFactory().constructMapType(
-		    Map.class, String.class, Object.class);
-		Map<String, Object> data = null;
-		try
-		{
-			data = mapper.readValue(jsonToSearch, type);
-		} catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		for (Map.Entry<String, Object> entry : data.entrySet()) {
-		    //String key = entry.getKey();
-		    //Object value = entry.getValue();
-			//if (entry.getKey().toLowerCase().contains(searchFor.toLowerCase()) || 
-			//		((String)entry.getValue()).toLowerCase().contains(searchFor.toLowerCase())) {
-			    if (searchResultsStringBuffer.length() > 1)
-			    	searchResultsStringBuffer.append(",");
-			    searchResultsStringBuffer.append("[Key: " + entry.getKey() + "\tValue: " + entry.getValue() + "]");
-			//}
 		}
 		*/
 		
@@ -661,42 +662,6 @@ public class DataBroker {
 		}
 		*/
 		
-		/*
-		 * This isn't working.
-		Map<String,String> resultMap = new HashMap<String,String>();  //or can this be set to null?
-		ObjectMapper mapperObject = new ObjectMapper();
-		try
-		{
-			//From http://www.java2novice.com/java-json/jackson/json-to-map-object/
-			resultMap = mapperObject.readValue(searchThrough, new TypeReference<HashMap<String,String>>(){});
-		} catch (JsonParseException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		StringBuffer searchResultsStringBuffer = new StringBuffer();
-		if (resultMap.containsKey(searchFor))
-			searchResultsStringBuffer.append("[" + searchFor + "," + resultMap.get(searchFor) + "]\n");
-	    Set<String> keys = new HashSet<String>();
-	    for (Entry<String, String> entry : resultMap.entrySet()) {
-	        if (searchFor.equals(entry.getValue())) {
-	            keys.add(entry.getKey());
-	        }
-	    }
-	    for (String key : keys) {
-	    	searchResultsStringBuffer.append("[" + key + "," + resultMap.get(key) + "]\n");
-		}
-	    String searchResultsString = searchResultsStringBuffer.toString();
-	    */
-	    
 		return Response
 				.status(200)
 				.entity(searchResultsString.toString())
