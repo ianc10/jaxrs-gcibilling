@@ -150,12 +150,48 @@ public class DataBroker {
             System.out.println(row);
             resultString = row.toString();
         }
-        //These should be reused in a normal application, across threads:
+        //These should be reused in a normal application, across threads, not closed after every use:
         bucket.close();
         cluster.disconnect();
         return resultString;
 	}
 
+	//Write out JSON documents to Couchbase
+	@GET
+	@Path("/couchbasewrite")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String writeToCouchbase() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+		//This will cause the node to be a subnode of the root node Contracts (and Invoices, later):
+		//objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE,  true);
+        Cluster cluster = CouchbaseCluster.create("localhost");
+        Bucket bucket = cluster.openBucket("default");
+		StringBuffer jsonString = null;
+		try {
+			for (Contract contract : contracts) {
+				if (contract instanceof LineItemContract) {
+					bucket.upsert(RawJsonDocument.create(Integer.toString(contract.contractID), objectMapper.writeValueAsString((LineItemContract)contract)));
+				} else if (contract instanceof ServiceAgreementContract) {
+					bucket.upsert(RawJsonDocument.create(Integer.toString(contract.contractID), objectMapper.writeValueAsString((ServiceAgreementContract)contract)));
+				} else if (contract instanceof ServiceOrderContract)	{
+					bucket.upsert(RawJsonDocument.create(Integer.toString(contract.contractID), objectMapper.writeValueAsString((ServiceOrderContract)contract)));
+				}
+			}
+			for (Invoice invoice : invoices) {
+				bucket.upsert(RawJsonDocument.create(Integer.toString(invoice.invoiceID),objectMapper.writeValueAsString(invoice)));
+			}
+		} catch (JsonProcessingException e)	{
+			e.printStackTrace();
+			return e.toString();
+		} finally {
+			bucket.close();
+			cluster.disconnect();
+			//System.out.println("*finally block complete*");
+		}
+		return "OK";		
+	}
+	
 	//With the @Json annotation (see first couple of subclasses) I was
 	//trying to get automatic output of subclass-particular info.
 	@GET
