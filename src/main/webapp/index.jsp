@@ -5,12 +5,12 @@
     <p><b>*note*  I just installed Couchbase Enteprise Server 4.5.0 64-bit for Linux along with client
     <br>Java and .NET SDK's (via Maven in Eclipse and NuGet Package Manager in Visual Studio), and
     <br>made RESTful calls to it:</b>
+    <p><a href="webapi/databroker/getcontractsandinvoices">Get contracts and invoices from in-memory contructed POJO's as JSON: webapi/databroker/getcontractsandinvoices</a>
+    <p><a href="webapi/databroker/couchbasewrite">Write POJO Contracts (and subclasses) and Invoices data to Couchbase as JSON: webapi/databroker/couchbasewrite</a>
     <p><a href="webapi/databroker/couchbasegetinvoices">Query Couchbase for all Invoices: webapi/databroker/couchbasegetinvoices</a>
     <p><a href="webapi/databroker/couchbasegetcontracts">Query Couchbase for all Contracts: webapi/databroker/couchbasegetcontracts</a>
-    <p><a href="webapi/databroker/couchbasewrite">Write POJO Contracts (and subclasses) and Invoices data to Couchbase as JSON: webapi/databroker/couchbasewrite</a>
     <!-- <p><a href="webapi/databroker/couchbase">Access Couchbase server: webapi/databroker/couchbase</a> -->
-    <p><a href="webapi/databroker/getcontractsandinvoices">Get contracts and invoices from in-memory contructed POJO's: webapi/databroker/getcontractsandinvoices</a>
-    <p><a href="webapi/databroker/calculatebadgenumber">Calculate badge number: webapi/databroker/calculatebadgenumber</a>
+    <p><a href="webapi/databroker/calculatebadgenumber">Calculate badge number (the number of contracts that are expiring PLUS the number of invoices that are past due): webapi/databroker/calculatebadgenumber</a>
     <p><a href="webapi/databroker/search/dayOfWeek">Search all in-memory POJO-to-JSON data for keys "dayOfWeek": webapi/databroker/search/dayOfWeek</a>
 	<p><a href="webapi/application.wadl">Show API calls by getting the Web Application Description Language: webapi/application.wadl</a>
 	<p>Enter search text to instantly query via AJAX: <input id="searchText" type="text" value="dayOfWeek" oninput="callSearch()">
