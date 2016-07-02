@@ -111,11 +111,59 @@ public class DataBroker {
 		invoices.add(invoice8);
 	}
 	
+	//Get Invoices from Couchbase
+	@GET
+	@Path("/couchbasegetinvoices")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getInvoicesFromCouchbase() {
+        // Initialize the Connection
+        Cluster cluster = CouchbaseCluster.create("localhost");
+        Bucket bucket = cluster.openBucket("default");
+
+        N1qlQueryResult result = bucket.query(
+        		N1qlQuery.simple("SELECT default.* FROM default WHERE type='net.mandelmania.Invoice'"));
+        
+        String resultString = result.allRows().toString();
+        
+        //These should be reused in a normal application, across threads, not closed after every use:
+        bucket.close();
+        cluster.disconnect();
+        return resultString;			
+	}
+	
+	//Get Contracts from Couchbase
+	@GET
+	@Path("/couchbasegetcontracts")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getContractsFromCouchbase() {
+        // Initialize the Connection
+        Cluster cluster = CouchbaseCluster.create("localhost");
+        Bucket bucket = cluster.openBucket("default");
+
+        N1qlQueryResult result = bucket.query(
+        		N1qlQuery.simple("SELECT default.* FROM default WHERE type='net.mandelmania.LineItemContract' OR type='net.mandelmania.ServiceOrderContract' OR type='net.mandelmania.ServiceAgreementContract'"));
+        
+        /*
+        // Print each found Row
+        for (N1qlQueryRow row : result) {
+            // Prints {"name":"Arthur"}
+            System.out.println(row);
+            resultString = row.toString();
+        }*/
+        
+        String resultString = result.allRows().toString();
+        
+        //These should be reused in a normal application, across threads, not closed after every use:
+        bucket.close();
+        cluster.disconnect();
+        return resultString;		
+	}
+	
 	//Connect to Couchbase database
 	@GET
 	@Path("/couchbase")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String connectoToCouchbase() {
+	public String connectToCouchbase() {
 		String resultString = null;
 		
         // Initialize the Connection
@@ -133,8 +181,10 @@ public class DataBroker {
 
         // Load the Document and print it
         // Prints Content and Metadata of the stored Document
-        System.out.println(bucket.get("u:king_arthur"));
+        //System.out.println(bucket.get("u:king_arthur"));
+        resultString = bucket.get("u:king_arthur").toString();
 
+        /*
         // Create a N1QL Primary Index (but ignore if it exists)
         bucket.bucketManager().createN1qlPrimaryIndex(true, false);
 
@@ -149,7 +199,8 @@ public class DataBroker {
             // Prints {"name":"Arthur"}
             System.out.println(row);
             resultString = row.toString();
-        }
+        }*/
+        
         //These should be reused in a normal application, across threads, not closed after every use:
         bucket.close();
         cluster.disconnect();
