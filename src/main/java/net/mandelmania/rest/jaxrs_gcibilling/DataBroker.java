@@ -29,6 +29,7 @@ import com.couchbase.client.java.document.*;
 import com.couchbase.client.java.document.json.*;
 import com.couchbase.client.java.query.*;
 
+//The jaunt libraries are not used:
 //import com.jaunt.JNode;
 //import com.jaunt.JauntException;
 //import com.jaunt.UserAgent;
@@ -223,7 +224,6 @@ public class DataBroker {
 		//objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE,  true);
         Cluster cluster = CouchbaseCluster.create("localhost");
         Bucket bucket = cluster.openBucket("default");
-		StringBuffer jsonString = null;
 		try {
 			for (Contract contract : contracts) {
 				if (contract instanceof LineItemContract) {
@@ -382,7 +382,7 @@ public class DataBroker {
 			e1.printStackTrace();
 		}
 		for (JsonNode root: rootArray) {
-			String jsonNodeText = root.toString();
+			//String jsonNodeText = root.toString();
 			final MapType type = mapper.getTypeFactory().constructMapType(
 				    Map.class, String.class, Object.class);
 			ObjectMapper innerMapper = new ObjectMapper();

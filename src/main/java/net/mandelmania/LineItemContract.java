@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
 public class LineItemContract extends Contract
 {
+	//@JsonProperty enables ObjectMapper to output subclass-specific properties:
 	@JsonProperty("billingPeriodTotal")
 	public double billingPeriodTotal = 0.0;
 	

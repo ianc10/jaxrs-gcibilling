@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
 public class ServiceAgreementContract extends Contract
 {
+	//@JsonProperty enables ObjectMapper to output subclass-specific properties:
 	@JsonProperty("pricePerBillingPeriod")
 	public double pricePerBillingPeriod;
 	
@@ -31,6 +32,7 @@ public class ServiceAgreementContract extends Contract
 
 	//@JSonCreator and @JsonProperty:
 	//attempt at automatic JSON subclass info output (see DataBroker.getContractsSuperclassInfoInJSON())
+	//They don't seem to have any effect.
 	@JsonCreator
 	public ServiceAgreementContract(
 			@JsonProperty("customerCode") String aCustomerCode,
@@ -50,6 +52,7 @@ public class ServiceAgreementContract extends Contract
 		scopeOfWork = aScopeOfWork;
 	}
 	
+	//@JsonCreator and @JsonProperty don't seem to have any effect here:
 	@JsonCreator
 	public ServiceAgreementContract(
 			@JsonProperty("customerCode") String aCustomerCode,
