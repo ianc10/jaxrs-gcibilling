@@ -10,10 +10,17 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
 public class ServiceAgreementContract extends Contract
 {
+	@JsonProperty("pricePerBillingPeriod")
 	public double pricePerBillingPeriod;
+	
+	@JsonProperty("projectSummary")
 	public String projectSummary;
+	
+	@JsonProperty("scopeOfWork")
 	public String scopeOfWork;
+	
 	//This field is optional; if in use, set it to something other than 0.
+	@JsonProperty("upToHours")
 	public int upToHours = 0;
 	
 	public ServiceAgreementContract(String aCustomerCode, String aContractIDPrefix, int aContractID,

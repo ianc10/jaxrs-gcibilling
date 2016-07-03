@@ -8,18 +8,18 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
-@JsonRootName("Contracts")
+//@JsonRootName("Contracts")
 //Use JsonTypeInfo.Id.NAME instead of .CLASS to get the class name without the package prefix.
 //@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
+//@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
+    //@JsonSubTypes.Type(value = LineItemContract.class, name = "LineItemContract"),
+    //@JsonSubTypes.Type(value = ServiceAgreementContract.class, name = "ServiceAgreementContract"),
+    //@JsonSubTypes.Type(value = ServiceOrderContract.class, name = "ServiceOrderContract")})	
 	@Type(value = LineItemContract.class),
 	@Type(value = ServiceAgreementContract.class),
 	@Type(value = ServiceOrderContract.class)
-	//To override the Id.NAME values:
-	//@Type(value = LineItemContract.class, name = "LineItemContract"),
-	//@Type(value = ServiceAgreementContract.class, name = "ServiceAgreementContract"),
-	//@Type(value = ServiceOrderContract.class, name = "ServiceOrderContract")
 })
 public abstract class Contract
 {

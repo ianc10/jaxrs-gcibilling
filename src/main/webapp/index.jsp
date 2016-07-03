@@ -5,14 +5,17 @@
     <p><b>*note*  I just installed Couchbase Enteprise Server 4.5.0 64-bit for Linux along with client
     <br>Java and .NET SDK's (via Maven in Eclipse and NuGet Package Manager in Visual Studio), and
     <br>made RESTful calls to it:</b>
-    <p><a href="webapi/databroker/getcontractsandinvoices">Get contracts and invoices from in-memory contructed POJO's as JSON: webapi/databroker/getcontractsandinvoices</a>
-    <p><a href="webapi/databroker/couchbasewrite">Write POJO Contracts (and subclasses) and Invoices data to Couchbase as JSON: webapi/databroker/couchbasewrite</a>
-    <p><a href="webapi/databroker/couchbasegetinvoices">Query Couchbase for all Invoices: webapi/databroker/couchbasegetinvoices</a>
-    <p><a href="webapi/databroker/couchbasegetcontracts">Query Couchbase for all Contracts: webapi/databroker/couchbasegetcontracts</a>
+    <p><a href="webapi/databroker/getcontracts">Get set of Contract POJO's as JSON (it uses @JsonProperty annotations to automatically output the appropriate subclass properties): webapi/databroker/getcontracts</a>
+    <p><a href="webapi/databroker/getinvoices">Get set of Invoice POJO's as JSON: webapi/databroker/getinvoices</a>
+    <p><a href="webapi/databroker/getcontractsandinvoices">Get contracts and invoices from in-memory contructed POJO's as JSON (this is an alternative to using @JsonProperty annotations, as it manually checks each Contract object to determine which subclass of Contract, to output the appropriate object's properties): webapi/databroker/getcontractsandinvoices</a>
     <!-- <p><a href="webapi/databroker/couchbase">Access Couchbase server: webapi/databroker/couchbase</a> -->
     <p><a href="webapi/databroker/calculatebadgenumber">Calculate badge number (the number of contracts that are expiring PLUS the number of invoices that are past due): webapi/databroker/calculatebadgenumber</a>
     <p><a href="webapi/databroker/search/dayOfWeek">Search all in-memory POJO-to-JSON data for keys "dayOfWeek": webapi/databroker/search/dayOfWeek</a>
 	<p><a href="webapi/application.wadl">Show API calls by getting the Web Application Description Language: webapi/application.wadl</a>
+	<p><br></p>
+    <p><a href="webapi/databroker/couchbasewrite">Write POJO Contracts (and subclasses) and Invoices data to Couchbase as JSON: webapi/databroker/couchbasewrite</a>
+    <p><a href="webapi/databroker/couchbasegetinvoices">Query Couchbase for all Invoices: webapi/databroker/couchbasegetinvoices</a>
+    <p><a href="webapi/databroker/couchbasegetcontracts">Query Couchbase for all Contracts: webapi/databroker/couchbasegetcontracts</a>
 	<p>Enter search text to instantly query via AJAX: <input id="searchText" type="text" value="dayOfWeek" oninput="callSearch()">
 	<p><em><b>Search results:</b></em>
 	<blockquote>

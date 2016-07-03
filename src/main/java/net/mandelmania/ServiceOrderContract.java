@@ -11,9 +11,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
 public class ServiceOrderContract extends Contract
 {
+	@JsonProperty("billingPeriodTotal")
 	public double billingPeriodTotal = 0.0;
-	//@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
-	//@JsonInclude
+
+	@JsonProperty("services")
 	public Vector<Service> services = new Vector<Service>();
 	
 	//@JsonCreator and @JsonProperty:

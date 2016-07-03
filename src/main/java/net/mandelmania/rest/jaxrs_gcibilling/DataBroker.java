@@ -18,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -31,6 +32,10 @@ import com.couchbase.client.java.query.*;
 //import com.jaunt.JNode;
 //import com.jaunt.JauntException;
 //import com.jaunt.UserAgent;
+
+//GitHub locations for jackson-databind and jackson-core
+//https://fasterxml.github.io/jackson-databind/
+//https://fasterxml.github.io/jackson-core/
 
 /**
  * Root resource (exposed at "databroker" path)
@@ -243,18 +248,66 @@ public class DataBroker {
 		return "OK";		
 	}
 	
-	//With the @Json annotation (see first couple of subclasses) I was
-	//trying to get automatic output of subclass-particular info.
+	//This doesn't produce subclass-specific properties:
 	@GET
 	@Path("/getsuperclasscontracts")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Vector<Contract> getContractsSuperclassInfoInJSON() {
 		return contracts;
 	}
-	 
-	//Since I haven't gotten the @Json approach (using Jackson) to work yet,
-	//I completed this alternative way to return in JSON the correct subclass-
-	//particular information for the three subclasses of Contract.
+
+	//This takes advantage of the @JsonProperty annotations in the subclasses of the
+	//Contract class to automatically deserialize the appropriate subclass's properties.
+	@GET
+	@Path("/getcontracts")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getContractsInJSON() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+		String output = null;
+		try
+		{
+			//output = objectMapper.writeValueAsString(contracts);
+			//Include the type information (for some reason, it does get included in the
+			//getContractsAndInvoicesInJSON() method):
+			JavaType vectorJavaType = objectMapper.getTypeFactory().constructCollectionType(Vector.class, Contract.class);
+			//output = objectMapper.writerWithType(vectorJavaType).writeValueAsString(contracts);
+			//writerWithType() is deprecated, so use writerFor() instead:
+			output = objectMapper.writerFor(vectorJavaType).writeValueAsString(contracts);
+		} catch (JsonProcessingException e)
+		{
+			e.printStackTrace();
+		}
+		return output;
+	}
+	
+	//This takes advantage of the @JsonProperty annotations in the subclasses of the
+	//Contract class to automatically deserialize the appropriate subclass's properties.
+	@GET
+	@Path("/getinvoices")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getInvoicesInJSON() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+		String output = null;
+		try
+		{
+			//output = objectMapper.writeValueAsString(contracts);
+			//Include the type information (for some reason, it does get included in the
+			//getContractsAndInvoicesInJSON() method):
+			JavaType vectorJavaType = objectMapper.getTypeFactory().constructCollectionType(Vector.class, Invoice.class);
+			//output = objectMapper.writerWithType(vectorJavaType).writeValueAsString(invoices);
+			//writerWithType() is deprecated, so use writerFor() instead:			
+			output = objectMapper.writerFor(vectorJavaType).writeValueAsString(invoices);
+		} catch (JsonProcessingException e)
+		{
+			e.printStackTrace();
+		}
+		return output;
+	}	
+	
+	//This is an alternative to using the @JsonProperty annotations that will (manually)
+	//detect each particular subclass and output accordingly.
 	@GET
 	@Path("/getcontractsandinvoices")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -326,7 +379,6 @@ public class DataBroker {
 			rootArray = mapper.readTree(jsonToSearch);
 		} catch (IOException e1)
 		{
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		for (JsonNode root: rootArray) {
@@ -368,7 +420,6 @@ public class DataBroker {
 			rootArray = mapper.readTree(jsonToSearch);
 		} catch (IOException e1)
 		{
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		for (JsonNode root: rootArray) {
@@ -405,7 +456,6 @@ public class DataBroker {
 			data = mapper.readValue(jsonToSearch, type);
 		} catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		for (Map.Entry<String, Object> entry : data.entrySet()) {
@@ -655,7 +705,6 @@ public class DataBroker {
 			jp = factory.createParser(jsonToSearch.getBytes());
 		} catch (IOException e1)
 		{
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		ObjectMapper mapper = new ObjectMapper();
@@ -671,7 +720,6 @@ public class DataBroker {
 			contracts = mapper.readValue(jsonToSearch, Contract[].class);
 		} catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		/*
@@ -684,7 +732,6 @@ public class DataBroker {
 			it = mapper.reader(typeRef).readValues(jp);
 		} catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -740,7 +787,6 @@ public class DataBroker {
 				data = mapper.readValue(match, type);
 			} catch (IOException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			for (Map.Entry<String, Object> entry : data.entrySet()) {
