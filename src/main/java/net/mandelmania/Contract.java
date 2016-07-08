@@ -1,7 +1,6 @@
 package net.mandelmania;
 
 import java.time.LocalDate;
-//import java.time.temporal.ChronoUnit.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
