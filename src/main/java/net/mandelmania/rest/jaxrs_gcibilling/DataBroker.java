@@ -237,6 +237,8 @@ public class DataBroker {
 			for (Invoice invoice : invoices) {
 				bucket.upsert(RawJsonDocument.create(Integer.toString(invoice.invoiceID),objectMapper.writeValueAsString(invoice)));
 			}
+	        // Create a N1QL Primary Index (but ignore if it exists)
+	        bucket.bucketManager().createN1qlPrimaryIndex(true, false);			
 		} catch (JsonProcessingException e)	{
 			e.printStackTrace();
 			return e.toString();

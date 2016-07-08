@@ -3,33 +3,33 @@ package net.mandelmania;
 import java.time.LocalDate;
 import java.util.Vector;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 //@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
+//@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 public class ServiceOrderContract extends Contract
 {
-	//@JsonProperty enables ObjectMapper to output subclass-specific properties:
-	@JsonProperty("billingPeriodTotal")
+	//@JsonProperty enables ObjectMapper to output subclass-specific properties (but isn't necessary
+	//when using the @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+	//annotation above for the superclass and each subclass):
 	public double billingPeriodTotal = 0.0;
 
-	@JsonProperty("services")
+	//@JsonProperty("services")
 	public Vector<Service> services = new Vector<Service>();
 	
 	//@JsonCreator and @JsonProperty:
 	//attempt at automatic JSON subclass info output (see DataBroker.getContractsSuperclassInfoInJSON())
 	//They don't seem to have any effect here:
-	@JsonCreator
+	//@JsonCreator
 	public ServiceOrderContract(
-			@JsonProperty("customerCode") String aCustomerCode,
-			@JsonProperty("contractIDPrefix") String aContractIDPrefix,
-			@JsonProperty("contractID") int aContractID,
-			@JsonProperty("startDate") LocalDate aStartDate,
-			@JsonProperty("termPeriod") TermPeriod aTermPeriod,
-			@JsonProperty("numberOfTerms") int aNumberOfTerms,
-			@JsonProperty("billingPeriod") BillingPeriod aBillingPeriod)
+			/*@JsonProperty("customerCode")*/ String aCustomerCode,
+			/*@JsonProperty("contractIDPrefix")*/ String aContractIDPrefix,
+			/*@JsonProperty("contractID")*/ int aContractID,
+			/*@JsonProperty("startDate")*/ LocalDate aStartDate,
+			/*@JsonProperty("termPeriod")*/ TermPeriod aTermPeriod,
+			/*@JsonProperty("numberOfTerms")*/ int aNumberOfTerms,
+			/*@JsonProperty("billingPeriod")*/ BillingPeriod aBillingPeriod)
 	{
 		super(aCustomerCode, aContractIDPrefix, aContractID, aStartDate, aTermPeriod, aNumberOfTerms, aBillingPeriod);
 		BillingPeriodTotal();

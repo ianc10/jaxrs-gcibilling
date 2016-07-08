@@ -2,9 +2,9 @@
 <body>
     <h2>GCI Billing Demo App</h2>
     <p><b>Application links:</b>
-    <p><a href="webapi/databroker/getcontracts">Get set of Contract POJO's as JSON (it uses @JsonProperty annotations to automatically output the appropriate subclass properties): webapi/databroker/getcontracts</a>
+    <p><a href="webapi/databroker/getcontracts">Get set of Contract POJO's as JSON (it uses @JsonTypeInfo annotations to automatically output the appropriate subclass properties): webapi/databroker/getcontracts</a>
     <p><a href="webapi/databroker/getinvoices">Get set of Invoice POJO's as JSON: webapi/databroker/getinvoices</a>
-    <p><a href="webapi/databroker/getcontractsandinvoices">Get contracts and invoices from in-memory contructed POJO's as JSON (this is an alternative to using @JsonProperty annotations, as it manually checks each Contract object to determine which subclass of Contract, to output the appropriate object's properties): webapi/databroker/getcontractsandinvoices</a>
+    <p><a href="webapi/databroker/getcontractsandinvoices">Get contracts and invoices from in-memory contructed POJO's as JSON (this is an alternative to using @JsonTypeInfo annotations, as it manually checks each Contract object to determine which subclass of Contract, to output the appropriate object's properties): webapi/databroker/getcontractsandinvoices</a>
     <!-- <p><a href="webapi/databroker/couchbase">Access Couchbase server: webapi/databroker/couchbase</a> -->
     <p><a href="webapi/databroker/calculatebadgenumber">Calculate badge number (the number of contracts that are expiring PLUS the number of invoices that are past due): webapi/databroker/calculatebadgenumber</a>
     <p><a href="webapi/databroker/search/dayOfWeek">Search all in-memory POJO-to-JSON data for keys "dayOfWeek": webapi/databroker/search/dayOfWeek</a>
