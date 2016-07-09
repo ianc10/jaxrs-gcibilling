@@ -127,7 +127,7 @@ public class DataBroker {
         Bucket bucket = cluster.openBucket("default");
 
         N1qlQueryResult result = bucket.query(
-        		N1qlQuery.simple("SELECT default.* FROM default WHERE type='net.mandelmania.Invoice'"));
+        		N1qlQuery.simple("SELECT default.* FROM default WHERE type='Invoice'"));
         
         String resultString = result.allRows().toString();
         
@@ -147,7 +147,7 @@ public class DataBroker {
         Bucket bucket = cluster.openBucket("default");
 
         N1qlQueryResult result = bucket.query(
-        		N1qlQuery.simple("SELECT default.* FROM default WHERE type='net.mandelmania.LineItemContract' OR type='net.mandelmania.ServiceOrderContract' OR type='net.mandelmania.ServiceAgreementContract'"));
+        		N1qlQuery.simple("SELECT default.* FROM default WHERE type='LineItemContract' OR type='ServiceOrderContract' OR type='ServiceAgreementContract'"));
         
         /*
         // Print each found Row

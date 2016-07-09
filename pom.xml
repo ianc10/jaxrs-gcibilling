@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.mandelmania.rest</groupId>
-    <artifactId>jaxrs-gcibilling</artifactId>
+    <artifactId>jaxrsgcibilling</artifactId>
     <packaging>war</packaging>
     <version>0.0.1-SNAPSHOT</version>
     <name>jaxrs-gcibilling</name>
 
     <build>
-        <finalName>jaxrs-gcibilling</finalName>
+        <finalName>jaxrsgcibilling</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
