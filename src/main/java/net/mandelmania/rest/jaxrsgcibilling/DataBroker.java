@@ -1,4 +1,4 @@
-package net.mandelmania.rest.jaxrs_gcibilling;
+package net.mandelmania.rest.jaxrsgcibilling;
 
 import net.mandelmania.*;
 
