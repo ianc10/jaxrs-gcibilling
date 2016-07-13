@@ -5,6 +5,7 @@ import net.mandelmania.*;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Vector;
 
@@ -51,8 +52,11 @@ public class DataBroker {
      * @return String that will be returned as a text/plain response.
      */
 	
-	static Vector<Contract> contracts = new Vector<Contract>();
-	static Vector<Invoice> invoices = new Vector<Invoice>();
+	//In general, ArrayList is the better choice to use now:
+	//static Vector<Contract> contracts = new Vector<Contract>();
+	//static Vector<Invoice> invoices = new Vector<Invoice>();
+	static ArrayList<Contract> contracts = new ArrayList<Contract>();
+	static ArrayList<Invoice> invoices = new ArrayList<Invoice>();
 	
 	//Populate our in-memory data:
 	static {
@@ -254,7 +258,8 @@ public class DataBroker {
 	@GET
 	@Path("/getsuperclasscontracts")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Vector<Contract> getContractsSuperclassInfoInJSON() {
+	//public Vector<Contract> getContractsSuperclassInfoInJSON() {
+	public ArrayList<Contract> getContractsSuperclassInfoinJSON() {
 		return contracts;
 	}
 
@@ -272,10 +277,11 @@ public class DataBroker {
 			//output = objectMapper.writeValueAsString(contracts);
 			//Include the type information (for some reason, it does get included in the
 			//getContractsAndInvoicesInJSON() method):
-			JavaType vectorJavaType = objectMapper.getTypeFactory().constructCollectionType(Vector.class, Contract.class);
+			//JavaType vectorJavaType = objectMapper.getTypeFactory().constructCollectionType(Vector.class, Contract.class);
+			JavaType arrayListJavaType = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, Contract.class);
 			//output = objectMapper.writerWithType(vectorJavaType).writeValueAsString(contracts);
 			//writerWithType() is deprecated, so use writerFor() instead:
-			output = objectMapper.writerFor(vectorJavaType).writeValueAsString(contracts);
+			output = objectMapper.writerFor(arrayListJavaType).writeValueAsString(contracts);
 		} catch (JsonProcessingException e)
 		{
 			e.printStackTrace();
@@ -297,10 +303,11 @@ public class DataBroker {
 			//output = objectMapper.writeValueAsString(contracts);
 			//Include the type information (for some reason, it does get included in the
 			//getContractsAndInvoicesInJSON() method):
-			JavaType vectorJavaType = objectMapper.getTypeFactory().constructCollectionType(Vector.class, Invoice.class);
+			//JavaType vectorJavaType = objectMapper.getTypeFactory().constructCollectionType(Vector.class, Invoice.class);
+			JavaType arrayListJavaType = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, Invoice.class);
 			//output = objectMapper.writerWithType(vectorJavaType).writeValueAsString(invoices);
 			//writerWithType() is deprecated, so use writerFor() instead:			
-			output = objectMapper.writerFor(vectorJavaType).writeValueAsString(invoices);
+			output = objectMapper.writerFor(arrayListJavaType).writeValueAsString(invoices);
 		} catch (JsonProcessingException e)
 		{
 			e.printStackTrace();
